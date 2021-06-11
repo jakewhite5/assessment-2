@@ -48,3 +48,5 @@ class Inventory:
             writer.writeheader()
             for movie in self.inventory:
                 writer.writerow({'id':movie['id'],'title':movie['title'],'rating':movie['rating'],'copies_available':movie['copies_available']})
+
+Inventory().list_inventory()
