@@ -19,14 +19,22 @@ class Interface:
                 self.inventory.list_inventory()
                 print(f'\n')
             elif mode == '3':
-                pass #View customer rentals
+                customer_id = input('Please enter customer ID to view current rentals. : ')
+                print(f'\nItems currently being rented: ')
+                print(self.customer.get_rentals(customer_id))
+                print(f'\n')
             elif mode == '4':
+                customer_id = input('Please enter customer ID : ')
                 self.inventory.list_inventory()
                 selection = input('Please enter movie ID that is being rented. : ')
                 returned_title = self.inventory.rent_movie(selection)
+                self.customer.add_movie(returned_title, customer_id)
 
             elif mode == '5':
-                pass # Return Movie
+                id = input('Please enter customer id')
+                movie = input('Please enter movie name')
+                self.customer.return_movie(id, movie)
+                
             elif mode == '6':
                 print('Goodbye!')
                 break

@@ -33,8 +33,12 @@ class Inventory:
                     return movie['title']
         self.update_inventory()
                 
-    def return_movie(self):
-        pass
+    def return_movie(self, movie):
+        for item in self.inventory:
+            if item['title'] == movie:
+                item['copies_available'] = str(int(item['copies_available'] + 1))
+        self.update_inventory()
+        
     
     def update_inventory(self):
         my_path = os.path.abspath(os.path.dirname(__file__))

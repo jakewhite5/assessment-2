@@ -13,6 +13,7 @@ class Customer:
             reader = csv.DictReader(customers_csv)
             for row in reader:
                 self.customer_list.append(row)
+
     
     def new_customer(self, first, last):
         self.first = first
@@ -42,21 +43,27 @@ class Customer:
             writer.writerow({'id':self.id, 'first_name':self.first, 'last_name':self.last})
     
     def add_movie(self, movie_name, customer_id):
-        if len(self.get_rented_movies(customer_id)) == 3:
+        if self.get_rentals(customer_id).count('/') == 2:
             raise 'Customer at rental limit'
+        elif self.get_rentals(customer_id).count('/') == 1:
+            for customer in self.customer_list:
+                if customer['id'] == customer_id:
+                    customer['current_video_rentals'] = customer['current_video_rentals']+f'/{movie_name}'
+        elif self.get_rentals(customer_id) == '':
+            for customer in self.customer_list:
+                if customer['id'] == customer_id:
+                    customer['current_video_rentals'] = movie_name
         else:
             for customer in self.customer_list:
                 if customer['id'] == customer_id:
-                    movie_list = self.get_rented_movies(customer_id).append(movie_name)
-                    customer['current_video_rentals'] = '/'.join(movie_list)
-                    self.update_customers()
-                    break
-                    
-    
-    def get_rented_movies(self, customer_id):
+                    customer['current_video_rentals'] = customer['current_video_rentals']+f'/{movie_name}'
+        self.update_customers()
+
+                        
+    def get_rentals(self, customer_id):
         for customer in self.customer_list:
             if customer['id'] == customer_id:
-                return (customer['current_video_rentals'].split('/'))
+                return customer['current_video_rentals']
     
     def update_customers(self):
         my_path = os.path.abspath(os.path.dirname(__file__))
@@ -66,9 +73,28 @@ class Customer:
             writer.writeheader()
             for customer in self.customer_list:
                 writer.writerow({'id':customer['id'],'first_name':customer['first_name'],'last_name':customer['last_name'],'current_video_rentals':customer['current_video_rentals']})
-    
 
-                
+    def return_movie(self, id, movie):
+        if '/' in self.get_rentals(id):
+            rental_list = self.get_rentals(id).split('/')
+            rental_list.remove(movie)
+            if len(rental_list) == 2:
+                for customer in self.customer_list:
+                    if customer['id'] == id:
+                        customer['current_video_rentals'] = '/'.join(rental_list)
+            else:
+                for customer in self.customer_list:
+                    if customer['id'] == id:
+                        customer['current_video_rentals'] = rental_list[0]
+        else:
+            for customer in self.customer_list:
+                    if customer['id'] == id:
+                        customer['current_video_rentals'] = ''
+        self.update_customers()
+
+
+        
+
 
 
 
