@@ -8,7 +8,7 @@ class Customer:
         self.customer_list = []
         self.generate_customer_list()
     
-
+    # creates initial list based off csv starting data
     def generate_customer_list(self):
         my_path = os.path.abspath(os.path.dirname(__file__))
         path = os.path.join(my_path, "../data/customers.csv")
@@ -17,7 +17,7 @@ class Customer:
             for row in reader:
                 self.customer_list.append(row)
 
-    
+    # creates instance of new customer by taking in first name and last name. Calls for self id
     def new_customer(self, first, last):
         self.first = first
         self.last = last
@@ -45,7 +45,7 @@ class Customer:
             writer = csv.DictWriter(customer_csv, fieldnames=['id','first_name','last_name','current_video_rentals'])
             writer.writerow({'id':self.id, 'first_name':self.first, 'last_name':self.last})
 
-    
+    # add movie by applying details of movie to customer object str. identifies quantity and format by locating /
     def add_movie(self, movie_name, customer_id):
         customer = self.get_customer_by_id(customer_id)
         if self.get_rentals(customer_id).count('/') == 2:
@@ -58,13 +58,13 @@ class Customer:
             customer['current_video_rentals'] = customer['current_video_rentals']+f'/{movie_name}'
         self.update_customers()
 
-                        
+    # return rental from customer based on id                    
     def get_rentals(self, customer_id):
         for customer in self.customer_list:
             if customer['id'] == customer_id:
                 return customer['current_video_rentals']
 
-    
+    # returns customer object based on id
     def get_customer_by_id(self, customer_id):
         for customer in self.customer_list:
             if customer['id'] == customer_id:
@@ -80,7 +80,7 @@ class Customer:
             for customer in self.customer_list:
                 writer.writerow({'id':customer['id'],'first_name':customer['first_name'],'last_name':customer['last_name'],'current_video_rentals':customer['current_video_rentals']})
 
-
+    # remove movie str from customer object with formatting in mind
     def return_movie(self, id, movie):
         customer = self.get_customer_by_id(id)
         if '/' in self.get_rentals(id):
