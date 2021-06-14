@@ -2,10 +2,13 @@ import csv
 import os
 class Customer:
 
+    #initially creates list from csv data
+
     def __init__(self):
         self.customer_list = []
         self.generate_customer_list()
     
+
     def generate_customer_list(self):
         my_path = os.path.abspath(os.path.dirname(__file__))
         path = os.path.join(my_path, "../data/customers.csv")
@@ -22,7 +25,7 @@ class Customer:
         print(f'Customer ID: {self.id}')
         self.save_new_user()
 
-    
+    # creates new id by adding 1 to highest current ID
     def generate_id(self):
         return_id = 0
         my_path = os.path.abspath(os.path.dirname(__file__))
@@ -34,29 +37,25 @@ class Customer:
                     return_id = int(row['id'])
         self.id = str(return_id + 1)
     
-
+    #makes append case for new users
     def save_new_user(self):
         my_path = os.path.abspath(os.path.dirname(__file__))
         path = os.path.join(my_path, "../data/customers.csv")
         with open(path, 'a') as customer_csv:
             writer = csv.DictWriter(customer_csv, fieldnames=['id','first_name','last_name','current_video_rentals'])
             writer.writerow({'id':self.id, 'first_name':self.first, 'last_name':self.last})
+
     
     def add_movie(self, movie_name, customer_id):
+        customer = self.get_customer_by_id(customer_id)
         if self.get_rentals(customer_id).count('/') == 2:
             raise 'Customer at rental limit'
         elif self.get_rentals(customer_id).count('/') == 1:
-            for customer in self.customer_list:
-                if customer['id'] == customer_id:
-                    customer['current_video_rentals'] = customer['current_video_rentals']+f'/{movie_name}'
+            customer['current_video_rentals'] = customer['current_video_rentals']+f'/{movie_name}'
         elif self.get_rentals(customer_id) == '':
-            for customer in self.customer_list:
-                if customer['id'] == customer_id:
-                    customer['current_video_rentals'] = movie_name
+            customer['current_video_rentals'] = movie_name
         else:
-            for customer in self.customer_list:
-                if customer['id'] == customer_id:
-                    customer['current_video_rentals'] = customer['current_video_rentals']+f'/{movie_name}'
+            customer['current_video_rentals'] = customer['current_video_rentals']+f'/{movie_name}'
         self.update_customers()
 
                         
@@ -64,7 +63,14 @@ class Customer:
         for customer in self.customer_list:
             if customer['id'] == customer_id:
                 return customer['current_video_rentals']
+
     
+    def get_customer_by_id(self, customer_id):
+        for customer in self.customer_list:
+            if customer['id'] == customer_id:
+                return customer
+
+    #total save to make data persistent after any transaction
     def update_customers(self):
         my_path = os.path.abspath(os.path.dirname(__file__))
         path = os.path.join(my_path, "../data/customers.csv")
@@ -74,22 +80,18 @@ class Customer:
             for customer in self.customer_list:
                 writer.writerow({'id':customer['id'],'first_name':customer['first_name'],'last_name':customer['last_name'],'current_video_rentals':customer['current_video_rentals']})
 
+
     def return_movie(self, id, movie):
+        customer = self.get_customer_by_id(id)
         if '/' in self.get_rentals(id):
             rental_list = self.get_rentals(id).split('/')
             rental_list.remove(movie)
             if len(rental_list) == 2:
-                for customer in self.customer_list:
-                    if customer['id'] == id:
-                        customer['current_video_rentals'] = '/'.join(rental_list)
+                customer['current_video_rentals'] = '/'.join(rental_list)
             else:
-                for customer in self.customer_list:
-                    if customer['id'] == id:
-                        customer['current_video_rentals'] = rental_list[0]
+                customer['current_video_rentals'] = rental_list[0]
         else:
-            for customer in self.customer_list:
-                    if customer['id'] == id:
-                        customer['current_video_rentals'] = ''
+            customer['current_video_rentals'] = ''
         self.update_customers()
 
 

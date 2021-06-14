@@ -30,8 +30,8 @@ class Inventory:
                     print('Sorry we are out of copies of that Title')
                 else:
                     movie['copies_available'] = str(int(movie['copies_available']) - 1)
+                    self.update_inventory()
                     return movie['title']
-        self.update_inventory()
                 
     def return_movie(self, movie):
         for item in self.inventory:
@@ -48,5 +48,3 @@ class Inventory:
             writer.writeheader()
             for movie in self.inventory:
                 writer.writerow({'id':movie['id'],'title':movie['title'],'rating':movie['rating'],'copies_available':movie['copies_available']})
-
-Inventory().list_inventory()
